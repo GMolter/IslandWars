@@ -1,28 +1,30 @@
-/* FULL file */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-html, body {
-  width: 100%;
-  height: 100%;
-  font-family: sans-serif;
-  background: #eef5f9;
-}
+/* full file */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; font-family:sans-serif; background:#eef5f9; }
 .auth-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  max-width:320px; margin:0 auto; padding:2rem;
+  display:flex; flex-direction:column; align-items:center;
 }
-.auth-container h1 {
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  color: #333;
+.auth-container h1 { margin-bottom:1rem; color:#333; }
+.tabs {
+  display:flex; margin-bottom:1rem; width:100%;
 }
-#firebaseui-auth-container {
-  width: 100%;
-  max-width: 320px;
+.tabs button {
+  flex:1; padding:.5rem; border:none; cursor:pointer;
+  background:#ddd; color:#333; font-weight:bold;
+}
+.tabs button.active { background:#1e90ff; color:#fff; }
+.form { width:100%; display:flex; flex-direction:column; }
+.form.hidden { display:none; }
+.form input {
+  margin-bottom:.75rem; padding:.5rem; font-size:1rem;
+  border:1px solid #ccc; border-radius:4px;
+}
+.form button {
+  margin-top:.5rem; padding:.75rem; font-size:1rem;
+  border:none; border-radius:4px; cursor:pointer;
+  background:#32cd32; color:#fff;
+}
+#google-signin {
+  background:#4285f4; margin-top:.5rem;
 }
