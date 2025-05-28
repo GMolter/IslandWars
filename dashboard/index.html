@@ -13,14 +13,11 @@
       <div class="logo">Island Wars</div>
 
       <!-- Quantity toggles -->
-      <div class="buy-options">
-        <div class="amount-buttons">
-          <button class="amount-btn active" data-amount="1">×1</button>
-          <button class="amount-btn" data-amount="5">×5</button>
-          <button class="amount-btn" data-amount="25">×25</button>
-          <button class="amount-btn" data-amount="100">×100</button>
-        </div>
-        <div id="harvester-cost-display" class="cost-display">Cost: 0</div>
+      <div class="amount-buttons">
+        <button class="amount-btn active" data-amount="1">×1</button>
+        <button class="amount-btn" data-amount="5">×5</button>
+        <button class="amount-btn" data-amount="25">×25</button>
+        <button class="amount-btn" data-amount="100">×100</button>
       </div>
 
       <!-- Buy Harvester + tooltip -->
@@ -31,6 +28,7 @@
       >
         Buy Harvester
       </button>
+      <div id="harvester-price" class="item-price">Cost: 0</div>
     </nav>
 
     <!-- MAIN CONTENT -->
@@ -53,15 +51,19 @@
           <h2>Wood</h2>
           <p><span id="wood-count">0</span></p>
           <button id="gather-wood" class="resource-btn">Gather Wood</button>
+          <div class="rate">+<span id="wood-rate">0</span> wood/sec</div>
         </div>
         <div class="resource-card">
-          <h2>Stone</h2><p><span id="stone-count">0</span></p>
+          <h2>Stone</h2>
+          <p><span id="stone-count">0</span></p>
         </div>
         <div class="resource-card">
-          <h2>Fish</h2><p><span id="fish-count">0</span></p>
+          <h2>Fish</h2>
+          <p><span id="fish-count">0</span></p>
         </div>
         <div class="resource-card">
-          <h2>Harvesters</h2><p><span id="harvester-count">0</span></p>
+          <h2>Harvesters</h2>
+          <p><span id="harvester-count">0</span></p>
         </div>
       </section>
     </div>
