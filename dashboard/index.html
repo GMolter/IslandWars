@@ -4,21 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Island Wars – Dashboard</title>
-  <!-- relative link to this same folder -->
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- SIDEBAR -->
     <nav class="sidebar">
       <div class="logo">Island Wars</div>
       <button id="buy-harvester" class="sidebar-btn">
-        Buy Harvester (+1/min)
+        Buy Harvester
       </button>
-      <!-- add more sidebar actions here -->
     </nav>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
       <header class="topbar">
         <h1 id="welcome">Hello, Player</h1>
@@ -35,11 +31,11 @@
         </div>
       </header>
 
-      <!-- RESOURCE CARDS -->
       <section class="resources">
         <div class="resource-card">
           <h2>Wood</h2>
           <p><span id="wood-count">0</span></p>
+          <button id="gather-wood" class="resource-btn">Gather Wood</button>
         </div>
         <div class="resource-card">
           <h2>Stone</h2>
@@ -49,11 +45,14 @@
           <h2>Fish</h2>
           <p><span id="fish-count">0</span></p>
         </div>
+        <div class="resource-card">
+          <h2>Harvesters</h2>
+          <p><span id="harvester-count">0</span></p>
+        </div>
       </section>
     </div>
   </div>
 
-  <!-- relative script path -->
   <script type="module" src="./app.js"></script>
 </body>
 </html>
