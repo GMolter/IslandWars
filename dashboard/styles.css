@@ -6,7 +6,142 @@ html, body { height:100%; font-family:"Segoe UI",sans-serif; background:#f0f4f8;
 .dashboard-container { display:flex; height:100%; }
 
 /* --- SIDEBAR --- */
-.sidebar {
+.sidebar {import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signOut, updateProfile
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import {
+  getDatabase, ref, onValue, runTransaction, set
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+// — init Firebase (same as before) —
+const firebaseConfig = { /* … */ };
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+// — UI refs —
+const welcomeEl        = document.getElementById("welcome");
+const userIconEl       = document.getElementById("user-icon");
+const dropdownEl       = document.getElementById("user-dropdown");
+const displayNameInput = document.getElementById("display-name-input");
+const saveNameBtn      = document.getElementById("save-display-name");
+const signoutBtn       = document.getElementById("signout-dropdown");
+
+const woodCount        = document.getElementById("wood-count");
+const stoneCount       = document.getElementById("stone-count");
+const fishCount        = document.getElementById("fish-count");
+const harvesterCountEl = document.getElementById("harvester-count");
+
+const buyHarvestBtn  = document.getElementById("buy-harvester");
+const gatherWoodBtn  = document.getElementById("gather-wood");
+
+let localRes = { wood:0, stone:0, fish:0, harvesters:0 };
+
+// calculate next cost
+function getNextHarvesterCost(n) {
+  return Math.floor(75 * Math.pow(1.2, n));
+}
+
+// update “Buy Harvester” label & harvesters display
+function refreshHarvesterUI() {
+  const n = localRes.harvesters;
+  harvesterCountEl.textContent = n;
+  if (n >= 10) {
+    buyHarvestBtn.textContent = "Max Harvesters";
+    buyHarvestBtn.disabled = true;
+  } else {
+    const cost = getNextHarvesterCost(n);
+    buyHarvestBtn.textContent = `Buy Harvester (cost ${cost})`;
+    buyHarvestBtn.disabled = false;
+  }
+}
+
+// auth & presence
+onAuthStateChanged(auth, user => {
+  if (!user) return location.assign("/IslandWars/");
+  const name = user.displayName || user.email.split("@")[0];
+  welcomeEl.textContent = `Hello, ${name}`;
+  userIconEl.textContent = name.charAt(0).toUpperCase();
+  displayNameInput.value = user.displayName || "";
+
+  // presence
+  const presRef = ref(db, `presence/${user.uid}`);
+  set(presRef, { online:true, lastSeen:Date.now() });
+  window.addEventListener("beforeunload", () =>
+    set(presRef, { online:false, lastSeen:Date.now() })
+  );
+
+  // subscribe to resources + harvesters
+  const resRef = ref(db, `users/${user.uid}/resources`);
+  onValue(resRef, snap => {
+    const d = snap.val() || {};
+    localRes = {
+      wood: d.wood||0,
+      stone: d.stone||0,
+      fish: d.fish||0,
+      harvesters: d.harvesters||0
+    };
+    woodCount.textContent = localRes.wood;
+    stoneCount.textContent = localRes.stone;
+    fishCount.textContent = localRes.fish;
+    refreshHarvesterUI();
+  });
+
+  // start auto‐harvest loop
+  setInterval(() => {
+    const n = localRes.harvesters;
+    if (n > 0) {
+      const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
+      runTransaction(refR, curr => {
+        curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
+        curr.wood = (curr.wood||0) + n;
+        return curr;
+      });
+    }
+  }, 1000);
+});
+
+// manual gather
+gatherWoodBtn.addEventListener("click", () => {
+  const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
+  runTransaction(refR, curr => {
+    curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
+    curr.wood = (curr.wood||0) + 1;
+    return curr;
+  });
+});
+
+// buy harvesters
+buyHarvestBtn.addEventListener("click", () => {
+  const n = localRes.harvesters;
+  if (n >= 10) return alert("Max harvesters reached");
+  const cost = getNextHarvesterCost(n);
+  if (localRes.wood < cost) return alert("Not enough wood");
+  const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
+  runTransaction(refR, curr => {
+    curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
+    curr.wood -= cost;
+    curr.harvesters = (curr.harvesters||0) + 1;
+    return curr;
+  });
+});
+
+// user menu toggle / save name / sign out
+userIconEl .addEventListener("click", () => dropdownEl.classList.toggle("hidden"));
+saveNameBtn.addEventListener("click", () => {
+  const nn = displayNameInput.value.trim();
+  if (!nn) return alert("Name can't be empty");
+  updateProfile(auth.currentUser, { displayName:nn })
+    .then(() => {
+      welcomeEl.textContent = `Hello, ${nn}`;
+      userIconEl.textContent = nn[0].toUpperCase();
+      dropdownEl.classList.add("hidden");
+    })
+    .catch(e => alert(e.message));
+});
+signoutBtn.addEventListener("click", () => signOut(auth));
+
   width:220px; background:#1e3a8a; color:#fff;
   padding:1.5rem 1rem; display:flex; flex-direction:column;
 }
