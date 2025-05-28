@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Island Wars – Dashboard</title>
-  <link rel="stylesheet" href="styles.css" />
+  <!-- relative link to this same folder -->
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="dashboard-container">
@@ -14,12 +15,12 @@
       <button id="buy-harvester" class="sidebar-btn">
         Buy Harvester (+1/min)
       </button>
-      <!-- future actions can go here -->
+      <!-- add more sidebar actions here -->
     </nav>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-      <header>
+      <header class="topbar">
         <h1 id="welcome">Hello, Player</h1>
         <div class="user-menu">
           <div id="user-icon" class="user-icon">?</div>
@@ -52,6 +53,7 @@
     </div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <!-- relative script path -->
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
