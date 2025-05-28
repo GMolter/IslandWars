@@ -1,51 +1,157 @@
-/* full file */
+/* ===== GLOBAL RESET ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 html, body {
-  width: 100%;
   height: 100%;
-  font-family: sans-serif;
-  background: #f0f8ff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
 }
+
+/* ===== LAYOUT ===== */
+.dashboard-container {
+  display: flex;
+  height: 100%;
+}
+
+/* -- Sidebar -- */
+.sidebar {
+  width: 220px;
+  background: #1e3a8a;
+  color: #fff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.sidebar-btn {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sidebar-btn:hover {
+  background: #1e40af;
+}
+
+/* -- Main Content -- */
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* -- Top Header -- */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background: #1e90ff;
-  color: #fff;
+  margin-bottom: 2rem;
 }
 header h1 {
   font-size: 1.5rem;
+  color: #1f2937;
 }
-header button {
-  padding: 0.5rem 1rem;
+
+/* -- User Menu & Dropdown -- */
+.user-menu {
+  position: relative;
+}
+.user-icon {
+  width: 40px;
+  height: 40px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e40af;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 48px;
   background: #fff;
-  color: #1e90ff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-main {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   padding: 1rem;
+  width: 200px;
+  z-index: 10;
 }
-#resources ul {
-  list-style: none;
-  margin-bottom: 1rem;
+.dropdown.hidden {
+  display: none;
 }
-#resources li {
-  margin: 0.5rem 0;
-  font-size: 1.2rem;
+.dropdown label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #374151;
 }
-#actions button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background: #32cd32;
-  color: #fff;
+.dropdown input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+.mini-btn {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
   border: none;
   border-radius: 4px;
+  background: #2563eb;
+  color: #fff;
   cursor: pointer;
+  transition: background 0.2s;
+}
+.mini-btn:hover {
+  background: #1e3a8a;
+}
+.mini-btn.secondary {
+  background: #ef4444;
+}
+.mini-btn.secondary:hover {
+  background: #b91c1c;
+}
+
+/* -- Resource Cards -- */
+.resources {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+.resource-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;
+}
+.resource-card h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #374151;
+}
+.resource-card p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e40af;
 }
