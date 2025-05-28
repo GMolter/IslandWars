@@ -13,7 +13,7 @@ import {
   set
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
-// --------- Firebase Init ---------
+// --- init ---
 const firebaseConfig = {
   apiKey: "AIzaSyBnDbEG_YROqReWVPW8aF85cKBcT2XTPGU",
   authDomain: "islandwarsrtdb.firebaseapp.com",
@@ -22,49 +22,42 @@ const firebaseConfig = {
   messagingSenderId: "968101646794",
   appId: "1:968101646794:web:c4e4d79856676cefaa3f33"
 };
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
 
-// --------- UI Refs ---------
+// --- UI refs ---
 const welcomeEl        = document.getElementById("welcome");
 const userIconEl       = document.getElementById("user-icon");
 const dropdownEl       = document.getElementById("user-dropdown");
 const displayNameInput = document.getElementById("display-name-input");
 const saveNameBtn      = document.getElementById("save-display-name");
 const signoutBtn       = document.getElementById("signout-dropdown");
-
 const woodCount        = document.getElementById("wood-count");
 const stoneCount       = document.getElementById("stone-count");
 const fishCount        = document.getElementById("fish-count");
 const buyHarvestBtn    = document.getElementById("buy-harvester");
 
-// --------- Auth & Presence ---------
+// --- auth guard & presence ---
 onAuthStateChanged(auth, user => {
-  if (!user) {
-    location.assign("/IslandWars/");
-    return;
-  }
-  // greeting + icon initial
+  if (!user) return location.assign("/IslandWars/");
   const name = user.displayName || user.email.split("@")[0];
   welcomeEl.textContent = `Hello, ${name}`;
   userIconEl.textContent  = name.charAt(0).toUpperCase();
   displayNameInput.value = user.displayName || "";
-
   trackPresence(user.uid);
   subscribeToResources(user.uid);
 });
 
-// presence
 function trackPresence(uid) {
   const presRef = ref(db, `presence/${uid}`);
-  set(presRef, { online: true, lastSeen: Date.now() });
-  window.addEventListener("beforeunload", () => {
-    set(presRef, { online: false, lastSeen: Date.now() });
-  });
+  set(presRef, { online:true, lastSeen:Date.now() });
+  window.addEventListener("beforeunload", () =>
+    set(presRef, { online:false, lastSeen:Date.now() })
+  );
 }
 
-// --------- Resource Subscription ---------
+// --- resources subscription ---
 function subscribeToResources(uid) {
   const resRef = ref(db, `users/${uid}/resources`);
   onValue(resRef, snap => {
@@ -75,7 +68,7 @@ function subscribeToResources(uid) {
   });
 }
 
-// --------- Buy Harvester ---------
+// --- buy harvester ---
 buyHarvestBtn.addEventListener("click", () => {
   const cost   = 50;
   const resRef = ref(db, `users/${auth.currentUser.uid}/resources`);
@@ -91,16 +84,16 @@ buyHarvestBtn.addEventListener("click", () => {
   });
 });
 
-// --------- User Menu Toggle ---------
+// --- user menu toggle ---
 userIconEl.addEventListener("click", () => {
   dropdownEl.classList.toggle("hidden");
 });
 
-// --------- Save Display Name ---------
+// --- save display name ---
 saveNameBtn.addEventListener("click", () => {
   const newName = displayNameInput.value.trim();
   if (!newName) return alert("Name can’t be empty.");
-  updateProfile(auth.currentUser, { displayName: newName })
+  updateProfile(auth.currentUser, { displayName:newName })
     .then(() => {
       welcomeEl.textContent = `Hello, ${newName}`;
       userIconEl.textContent = newName.charAt(0).toUpperCase();
@@ -109,7 +102,5 @@ saveNameBtn.addEventListener("click", () => {
     .catch(err => alert(err.message));
 });
 
-// --------- Sign Out ---------
-signoutBtn.addEventListener("click", () => {
-  signOut(auth);
-});
+// --- sign out ---
+signoutBtn.addEventListener("click", () => signOut(auth));
