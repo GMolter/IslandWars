@@ -2,31 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Island Wars – Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1 id="welcome">Island Wars</h1>
-    <button id="logout">Sign out</button>
-  </header>
+  <div class="dashboard-container">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="logo">Island Wars</div>
+      <button id="buy-harvester" class="sidebar-btn">
+        Buy Harvester (+1/min)
+      </button>
+      <!-- future actions can go here -->
+    </nav>
 
-  <main>
-    <section id="resources">
-      <h2>Your Resources</h2>
-      <ul>
-        <li>Wood: <span id="wood-count">0</span></li>
-        <li>Stone: <span id="stone-count">0</span></li>
-        <li>Fish: <span id="fish-count">0</span></li>
-      </ul>
-    </section>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <header>
+        <h1 id="welcome">Hello, Player</h1>
+        <div class="user-menu">
+          <div id="user-icon" class="user-icon">?</div>
+          <div id="user-dropdown" class="dropdown hidden">
+            <label for="display-name-input">Display Name</label>
+            <input id="display-name-input" type="text" />
+            <button id="save-display-name" class="mini-btn">Save</button>
+            <button id="signout-dropdown" class="mini-btn secondary">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
 
-    <section id="actions">
-      <button id="buy-harvester">Buy Harvester (+1/min)</button>
-      <!-- …you’ll wire up more buttons here later… -->
-    </section>
-  </main>
+      <!-- RESOURCE CARDS -->
+      <section class="resources">
+        <div class="resource-card">
+          <h2>Wood</h2>
+          <p><span id="wood-count">0</span></p>
+        </div>
+        <div class="resource-card">
+          <h2>Stone</h2>
+          <p><span id="stone-count">0</span></p>
+        </div>
+        <div class="resource-card">
+          <h2>Fish</h2>
+          <p><span id="fish-count">0</span></p>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
