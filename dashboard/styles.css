@@ -1,218 +1,178 @@
-/* ===== RESET ===== */
-* { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; font-family:"Segoe UI",sans-serif; background:#f0f4f8; }
-
-/* ===== LAYOUT ===== */
-.dashboard-container { display:flex; height:100%; }
-
-/* --- SIDEBAR --- */
-.sidebar {import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import {
-  getAuth, onAuthStateChanged, signOut, updateProfile
-} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-import {
-  getDatabase, ref, onValue, runTransaction, set
-} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-
-// — init Firebase (same as before) —
-const firebaseConfig = { /* … */ };
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getDatabase(app);
-
-// — UI refs —
-const welcomeEl        = document.getElementById("welcome");
-const userIconEl       = document.getElementById("user-icon");
-const dropdownEl       = document.getElementById("user-dropdown");
-const displayNameInput = document.getElementById("display-name-input");
-const saveNameBtn      = document.getElementById("save-display-name");
-const signoutBtn       = document.getElementById("signout-dropdown");
-
-const woodCount        = document.getElementById("wood-count");
-const stoneCount       = document.getElementById("stone-count");
-const fishCount        = document.getElementById("fish-count");
-const harvesterCountEl = document.getElementById("harvester-count");
-
-const buyHarvestBtn  = document.getElementById("buy-harvester");
-const gatherWoodBtn  = document.getElementById("gather-wood");
-
-let localRes = { wood:0, stone:0, fish:0, harvesters:0 };
-
-// calculate next cost
-function getNextHarvesterCost(n) {
-  return Math.floor(75 * Math.pow(1.2, n));
+/* ========== RESET & GLOBALS ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
 }
 
-// update “Buy Harvester” label & harvesters display
-function refreshHarvesterUI() {
-  const n = localRes.harvesters;
-  harvesterCountEl.textContent = n;
-  if (n >= 10) {
-    buyHarvestBtn.textContent = "Max Harvesters";
-    buyHarvestBtn.disabled = true;
-  } else {
-    const cost = getNextHarvesterCost(n);
-    buyHarvestBtn.textContent = `Buy Harvester (cost ${cost})`;
-    buyHarvestBtn.disabled = false;
-  }
+/* ========== DASHBOARD LAYOUT ========== */
+.dashboard-container {
+  display: flex;
+  height: 100%;
 }
 
-// auth & presence
-onAuthStateChanged(auth, user => {
-  if (!user) return location.assign("/IslandWars/");
-  const name = user.displayName || user.email.split("@")[0];
-  welcomeEl.textContent = `Hello, ${name}`;
-  userIconEl.textContent = name.charAt(0).toUpperCase();
-  displayNameInput.value = user.displayName || "";
-
-  // presence
-  const presRef = ref(db, `presence/${user.uid}`);
-  set(presRef, { online:true, lastSeen:Date.now() });
-  window.addEventListener("beforeunload", () =>
-    set(presRef, { online:false, lastSeen:Date.now() })
-  );
-
-  // subscribe to resources + harvesters
-  const resRef = ref(db, `users/${user.uid}/resources`);
-  onValue(resRef, snap => {
-    const d = snap.val() || {};
-    localRes = {
-      wood: d.wood||0,
-      stone: d.stone||0,
-      fish: d.fish||0,
-      harvesters: d.harvesters||0
-    };
-    woodCount.textContent = localRes.wood;
-    stoneCount.textContent = localRes.stone;
-    fishCount.textContent = localRes.fish;
-    refreshHarvesterUI();
-  });
-
-  // start auto‐harvest loop
-  setInterval(() => {
-    const n = localRes.harvesters;
-    if (n > 0) {
-      const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
-      runTransaction(refR, curr => {
-        curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
-        curr.wood = (curr.wood||0) + n;
-        return curr;
-      });
-    }
-  }, 1000);
-});
-
-// manual gather
-gatherWoodBtn.addEventListener("click", () => {
-  const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
-  runTransaction(refR, curr => {
-    curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
-    curr.wood = (curr.wood||0) + 1;
-    return curr;
-  });
-});
-
-// buy harvesters
-buyHarvestBtn.addEventListener("click", () => {
-  const n = localRes.harvesters;
-  if (n >= 10) return alert("Max harvesters reached");
-  const cost = getNextHarvesterCost(n);
-  if (localRes.wood < cost) return alert("Not enough wood");
-  const refR = ref(db, `users/${auth.currentUser.uid}/resources`);
-  runTransaction(refR, curr => {
-    curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
-    curr.wood -= cost;
-    curr.harvesters = (curr.harvesters||0) + 1;
-    return curr;
-  });
-});
-
-// user menu toggle / save name / sign out
-userIconEl .addEventListener("click", () => dropdownEl.classList.toggle("hidden"));
-saveNameBtn.addEventListener("click", () => {
-  const nn = displayNameInput.value.trim();
-  if (!nn) return alert("Name can't be empty");
-  updateProfile(auth.currentUser, { displayName:nn })
-    .then(() => {
-      welcomeEl.textContent = `Hello, ${nn}`;
-      userIconEl.textContent = nn[0].toUpperCase();
-      dropdownEl.classList.add("hidden");
-    })
-    .catch(e => alert(e.message));
-});
-signoutBtn.addEventListener("click", () => signOut(auth));
-
-  width:220px; background:#1e3a8a; color:#fff;
-  padding:1.5rem 1rem; display:flex; flex-direction:column;
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  width: 220px;
+  background: #1e3a8a;
+  color: #fff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
 }
 .logo {
-  font-size:1.25rem; font-weight:700; margin-bottom:2rem; text-align:center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 .sidebar-btn {
-  padding:.75rem 1rem; margin-bottom:1rem;
-  background:#2563eb; border:none; border-radius:6px;
-  color:#fff; font-size:1rem; cursor:pointer;
-  transition:background .2s;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
 }
-.sidebar-btn:hover { background:#1e40af; }
+.sidebar-btn:hover {
+  background: #1e40af;
+}
 
-/* --- MAIN --- */
-.main-content { flex:1; padding:1.5rem; overflow-y:auto; }
+/* ---------- MAIN CONTENT ---------- */
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
 
-/* --- TOPBAR --- */
+/* ---------- TOPBAR ---------- */
 .topbar {
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:2rem; background:#fff; padding:.5rem 1rem; border-radius:8px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  background: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
-.topbar h1 { font-size:1.5rem; color:#1f2937; }
+.topbar h1 {
+  font-size: 1.5rem;
+  color: #1f2937;
+}
 
-/* --- USER MENU --- */
-.user-menu { position:relative; }
+/* ---------- USER MENU ---------- */
+.user-menu {
+  position: relative;
+}
 .user-icon {
-  width:40px; height:40px; background:#e5e7eb;
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  color:#1e40af; font-weight:600; cursor:pointer;
+  width: 40px;
+  height: 40px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e40af;
+  font-weight: 600;
+  cursor: pointer;
 }
 .dropdown {
-  position:absolute; top:48px; right:0;
-  background:#fff; border:1px solid #d1d5db; border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:1rem; width:200px;
-  z-index:10;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  width: 200px;
+  z-index: 10;
 }
-.hidden { display:none; }
+.hidden {
+  display: none;
+}
 .dropdown label {
-  display:block; margin-bottom:.25rem; font-size:.9rem; color:#374151;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  color: #374151;
 }
 .dropdown input {
-  width:100%; padding:.5rem; margin-bottom:.75rem;
-  border:1px solid #cbd5e1; border-radius:4px;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
 }
 .mini-btn {
-  width:100%; padding:.5rem; margin-bottom:.5rem;
-  border:none; border-radius:4px; background:#2563eb;
-  color:#fff; font-size:.9rem; cursor:pointer; transition:background .2s;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
 }
-.mini-btn:hover { background:#1e3a8a; }
+.mini-btn:hover {
+  background: #1e3a8a;
+}
 .mini-btn.secondary {
-  background:#ef4444;
+  background: #ef4444;
 }
 .mini-btn.secondary:hover {
-  background:#b91c1c;
+  background: #b91c1c;
 }
 
-/* --- RESOURCES --- */
+/* ---------- RESOURCES GRID ---------- */
 .resources {
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
-  gap:1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
 }
+
+/* ---------- RESOURCE CARDS ---------- */
 .resource-card {
-  background:#fff; border-radius:8px; padding:1rem;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05); text-align:center;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
 }
 .resource-card h2 {
-  margin-bottom:.5rem; font-size:1.1rem; color:#374151;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #374151;
 }
 .resource-card p {
-  font-size:1.5rem; font-weight:600; color:#1e40af;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+/* ---------- MANUAL GATHER BUTTON ---------- */
+.resource-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  background: #10b981;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.resource-btn:hover {
+  background: #059669;
 }
