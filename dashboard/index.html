@@ -1,20 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Island Wars – Dashboard</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
   <div class="dashboard-container">
+    <!-- SIDEBAR -->
     <nav class="sidebar">
       <div class="logo">Island Wars</div>
-      <button id="buy-harvester" class="sidebar-btn">
+
+      <!-- Quantity toggles -->
+      <div class="buy-options">
+        <div class="amount-buttons">
+          <button class="amount-btn active" data-amount="1">×1</button>
+          <button class="amount-btn" data-amount="5">×5</button>
+          <button class="amount-btn" data-amount="25">×25</button>
+          <button class="amount-btn" data-amount="100">×100</button>
+        </div>
+        <div id="harvester-cost-display" class="cost-display">Cost: 0</div>
+      </div>
+
+      <!-- Buy Harvester + tooltip -->
+      <button 
+        id="buy-harvester" 
+        class="sidebar-btn" 
+        data-tooltip="Each harvester adds +1 wood/sec. Max 10 harvesters."
+      >
         Buy Harvester
       </button>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <div class="main-content">
       <header class="topbar">
         <h1 id="welcome">Hello, Player</h1>
@@ -22,11 +41,9 @@
           <div id="user-icon" class="user-icon">?</div>
           <div id="user-dropdown" class="dropdown hidden">
             <label for="display-name-input">Display Name</label>
-            <input id="display-name-input" type="text" />
+            <input id="display-name-input" type="text"/>
             <button id="save-display-name" class="mini-btn">Save</button>
-            <button id="signout-dropdown" class="mini-btn secondary">
-              Sign Out
-            </button>
+            <button id="signout-dropdown" class="mini-btn secondary">Sign Out</button>
           </div>
         </div>
       </header>
@@ -38,16 +55,13 @@
           <button id="gather-wood" class="resource-btn">Gather Wood</button>
         </div>
         <div class="resource-card">
-          <h2>Stone</h2>
-          <p><span id="stone-count">0</span></p>
+          <h2>Stone</h2><p><span id="stone-count">0</span></p>
         </div>
         <div class="resource-card">
-          <h2>Fish</h2>
-          <p><span id="fish-count">0</span></p>
+          <h2>Fish</h2><p><span id="fish-count">0</span></p>
         </div>
         <div class="resource-card">
-          <h2>Harvesters</h2>
-          <p><span id="harvester-count">0</span></p>
+          <h2>Harvesters</h2><p><span id="harvester-count">0</span></p>
         </div>
       </section>
     </div>
