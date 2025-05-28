@@ -12,23 +12,25 @@
     <nav class="sidebar">
       <div class="logo">Island Wars</div>
 
-      <!-- Quantity toggles -->
-      <div class="amount-buttons">
-        <button class="amount-btn active" data-amount="1">×1</button>
-        <button class="amount-btn" data-amount="5">×5</button>
-        <button class="amount-btn" data-amount="25">×25</button>
-        <button class="amount-btn" data-amount="100">×100</button>
-      </div>
+      <!-- entire shop wrapped so we can hide it at max harvesters -->
+      <div id="shop-section">
+        <div class="amount-buttons">
+          <button class="amount-btn active" data-amount="1">×1</button>
+          <button class="amount-btn" data-amount="5">×5</button>
+          <button class="amount-btn" data-amount="25">×25</button>
+          <button class="amount-btn" data-amount="100">×100</button>
+        </div>
 
-      <!-- Buy Harvester + tooltip -->
-      <button 
-        id="buy-harvester" 
-        class="sidebar-btn" 
-        data-tooltip="Each harvester adds +1 wood/sec. Max 10 harvesters."
-      >
-        Buy Harvester
-      </button>
-      <div id="harvester-price" class="item-price">Cost: 0</div>
+        <button 
+          id="buy-harvester" 
+          class="sidebar-btn" 
+          data-tooltip="Each harvester adds +1 wood/sec. Max 10 harvesters."
+        >
+          Buy Harvester
+        </button>
+        <!-- price now directly under the button -->
+        <div id="harvester-price" class="item-price">Cost: 0</div>
+      </div>
     </nav>
 
     <!-- MAIN CONTENT -->
@@ -51,6 +53,7 @@
           <h2>Wood</h2>
           <p><span id="wood-count">0</span></p>
           <button id="gather-wood" class="resource-btn">Gather Wood</button>
+          <!-- wood/sec rate -->
           <div class="rate">+<span id="wood-rate">0</span> wood/sec</div>
         </div>
         <div class="resource-card">
