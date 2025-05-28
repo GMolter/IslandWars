@@ -1,12 +1,19 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signOut, updateProfile
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import {
-  getDatabase, ref, onValue, runTransaction, set
+  getDatabase,
+  ref,
+  onValue,
+  runTransaction,
+  set
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
-// Firebase init
+// --------- Firebase Init ---------
 const firebaseConfig = {
   apiKey: "AIzaSyBnDbEG_YROqReWVPW8aF85cKBcT2XTPGU",
   authDomain: "islandwarsrtdb.firebaseapp.com",
@@ -15,11 +22,12 @@ const firebaseConfig = {
   messagingSenderId: "968101646794",
   appId: "1:968101646794:web:c4e4d79856676cefaa3f33"
 };
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getDatabase(app);
+initializeApp(firebaseConfig);
 
-// UI refs
+const auth = getAuth();
+const db   = getDatabase();
+
+// --------- UI Refs ---------
 const welcomeEl        = document.getElementById("welcome");
 const userIconEl       = document.getElementById("user-icon");
 const dropdownEl       = document.getElementById("user-dropdown");
@@ -42,9 +50,10 @@ const shopSection      = document.getElementById("shop-section");
 let purchaseAmount = 1;
 let localRes = { wood:0, stone:0, fish:0, harvesters:0 };
 
-// Cost funcs
+// --------- Cost Logic (75% increase per buy) ---------
 function getNextHarvesterCost(n) {
-  return Math.floor(75 * Math.pow(1.2, n));
+  // n = number of harvesters already owned
+  return Math.floor(75 * Math.pow(1.75, n));
 }
 function sumNextCosts(start, count) {
   let sum = 0;
@@ -54,27 +63,27 @@ function sumNextCosts(start, count) {
   return sum;
 }
 
-// UI Refresh
+// --------- UI Update Functions ---------
 function updateAmountUI() {
   amountBtns.forEach(btn => {
-    btn.classList.toggle("active",
-      parseInt(btn.dataset.amount,10) === purchaseAmount
+    btn.classList.toggle(
+      "active",
+      parseInt(btn.dataset.amount, 10) === purchaseAmount
     );
   });
 }
 function updatePriceUI() {
-  const n = localRes.harvesters;
-  const maxBuy = Math.min(purchaseAmount, 10 - n);
-  const cost   = sumNextCosts(n, maxBuy);
+  const owned = localRes.harvesters;
+  const maxBuy = Math.min(purchaseAmount, 10 - owned);
+  const cost   = sumNextCosts(owned, maxBuy);
   priceEl.textContent = `Cost: ${cost}`;
   priceEl.classList.toggle("green", cost <= localRes.wood && maxBuy>0);
-  priceEl.classList.toggle("red", !(cost <= localRes.wood && maxBuy>0));
+  priceEl.classList.toggle("red",   !(cost <= localRes.wood && maxBuy>0));
 }
 function refreshUI() {
   harvesterCountEl.textContent = localRes.harvesters;
-  woodRateEl.textContent       = localRes.harvesters;
+  woodRateEl.textContent       = localRes.harvesters; // +1 wood/sec per harvester
 
-  // hide shop at max
   if (localRes.harvesters >= 10) {
     shopSection.style.display = "none";
   } else {
@@ -84,95 +93,108 @@ function refreshUI() {
   }
 }
 
-// Auth & presence
+// --------- Auth & Presence ---------
 onAuthStateChanged(auth, user => {
-  if (!user) return location.assign("/IslandWars/");
+  if (!user) {
+    location.assign("/IslandWars/");
+    return;
+  }
+  // Greeting & avatar
   const name = user.displayName || user.email.split("@")[0];
   welcomeEl.textContent = `Hello, ${name}`;
-  userIconEl.textContent = name[0].toUpperCase();
+  userIconEl.textContent = name.charAt(0).toUpperCase();
   displayNameInput.value = user.displayName || "";
 
-  // presence
+  // Presence tracking
   const presRef = ref(db, `presence/${user.uid}`);
   set(presRef, { online:true, lastSeen:Date.now() });
-  window.addEventListener("beforeunload", () =>
-    set(presRef, { online:false, lastSeen:Date.now() })
-  );
+  window.addEventListener("beforeunload", () => {
+    set(presRef, { online:false, lastSeen:Date.now() });
+  });
 
-  // subscribe
-  const rRef = ref(db, `users/${user.uid}/resources`);
-  onValue(rRef, snap => {
+  // Subscribe to resources
+  const resRef = ref(db, `users/${user.uid}/resources`);
+  onValue(resRef, snap => {
     const d = snap.val() || {};
     localRes = {
-      wood: d.wood||0,
-      stone: d.stone||0,
-      fish: d.fish||0,
-      harvesters: d.harvesters||0
+      wood: d.wood || 0,
+      stone: d.stone || 0,
+      fish: d.fish || 0,
+      harvesters: d.harvesters || 0
     };
-    woodCount.textContent  = localRes.wood;
-    stoneCount.textContent = localRes.stone;
-    fishCount.textContent  = localRes.fish;
+    woodCount.textContent   = localRes.wood;
+    stoneCount.textContent  = localRes.stone;
+    fishCount.textContent   = localRes.fish;
     refreshUI();
   });
 
-  // auto‐harvest
+  // Auto-harvest every second
   setInterval(() => {
     const n = localRes.harvesters;
     if (n > 0) {
       const r = ref(db, `users/${auth.currentUser.uid}/resources`);
       runTransaction(r, curr => {
         curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
-        curr.wood = (curr.wood||0) + n;
+        curr.wood = (curr.wood || 0) + n;
         return curr;
       });
     }
   }, 1000);
 });
 
-// Listeners
-amountBtns.forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    purchaseAmount = parseInt(btn.dataset.amount,10);
+// --------- Event Listeners ---------
+// Quantity toggles
+amountBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    purchaseAmount = parseInt(btn.dataset.amount, 10);
     updateAmountUI();
     updatePriceUI();
   });
 });
 
-gatherWoodBtn.addEventListener("click", ()=>{
+// Manual gather
+gatherWoodBtn.addEventListener("click", () => {
   const r = ref(db, `users/${auth.currentUser.uid}/resources`);
   runTransaction(r, curr => {
     curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
-    curr.wood = (curr.wood||0) + 1;
+    curr.wood = (curr.wood || 0) + 1;
     return curr;
   });
 });
 
-buyHarvestBtn.addEventListener("click", ()=>{
-  const n = localRes.harvesters;
-  const maxBuy = Math.min(purchaseAmount, 10 - n);
-  if (maxBuy <= 0) return alert("Max harvesters reached");
-  const cost = sumNextCosts(n, maxBuy);
-  if (localRes.wood < cost) return alert("Not enough wood");
+// Buy harvesters
+buyHarvestBtn.addEventListener("click", () => {
+  const owned = localRes.harvesters;
+  const maxBuy = Math.min(purchaseAmount, 10 - owned);
+  if (maxBuy <= 0) {
+    return alert("You’ve reached the max of 10 harvesters");
+  }
+  const cost = sumNextCosts(owned, maxBuy);
+  if (localRes.wood < cost) {
+    return alert("Not enough wood");
+  }
   const r = ref(db, `users/${auth.currentUser.uid}/resources`);
   runTransaction(r, curr => {
     curr = curr || { wood:0, stone:0, fish:0, harvesters:0 };
     curr.wood -= cost;
-    curr.harvesters = (curr.harvesters||0) + maxBuy;
+    curr.harvesters = (curr.harvesters || 0) + maxBuy;
     return curr;
   });
 });
 
-// user menu toggle / save / sign out
-userIconEl.addEventListener("click", ()=> dropdownEl.classList.toggle("hidden"));
-saveNameBtn.addEventListener("click", ()=>{
+// User menu toggle / save name / sign out
+userIconEl.addEventListener("click", () =>
+  dropdownEl.classList.toggle("hidden")
+);
+saveNameBtn.addEventListener("click", () => {
   const nn = displayNameInput.value.trim();
   if (!nn) return alert("Name can’t be empty");
-  updateProfile(auth.currentUser, { displayName:nn })
-    .then(()=>{
+  updateProfile(auth.currentUser, { displayName: nn })
+    .then(() => {
       welcomeEl.textContent = `Hello, ${nn}`;
-      userIconEl.textContent = nn[0].toUpperCase();
+      userIconEl.textContent = nn.charAt(0).toUpperCase();
       dropdownEl.classList.add("hidden");
     })
-    .catch(e=>alert(e.message));
+    .catch(e => alert(e.message));
 });
-signoutBtn.addEventListener("click", ()=> signOut(auth));
+signoutBtn.addEventListener("click", () => signOut(auth));
