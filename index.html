@@ -20,8 +20,23 @@
         <input type="email" id="login-email" placeholder="Email" required />
         <input type="password" id="login-password" placeholder="Password" required />
         <button type="submit">Sign In</button>
-        <button type="button" id="google-signin" class="google-btn">
-          Sign in with Google
+
+        <!-- GSI-style Google Button -->
+        <button id="google-signin" class="gsi-material-button" type="button">
+          <div class="gsi-material-button-state"></div>
+          <div class="gsi-material-button-content-wrapper">
+            <div class="gsi-material-button-icon">
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 ..."></path>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57 ..."></path>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45 ..."></path>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93 ..."></path>
+                <path fill="none" d="M0 0h48v48H0z"></path>
+              </svg>
+            </div>
+            <span class="gsi-material-button-contents">Continue with Google</span>
+            <span style="display: none;">Continue with Google</span>
+          </div>
         </button>
       </form>
 
