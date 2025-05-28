@@ -20,38 +20,41 @@ html, body {
 
 /* Card */
 .auth-card {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
 }
 
 /* Title */
 .auth-card h1 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: #1f2937;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 .tab-btn {
   flex: 1;
-  padding: 0.75rem;
+  padding: 1rem;
   border: none;
-  background: #e2e8f0;
-  color: #333;
-  font-weight: 500;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 6px 6px 0 0;
 }
-.tab-btn:hover {
-  background: #cbd5e1;
+.tab-btn + .tab-btn {
+  margin-left: 0.5rem;
 }
 .tab-btn.active {
   background: #1e40af;
@@ -70,37 +73,52 @@ html, body {
 /* Inputs */
 .form input {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  height: 3.2rem;
+  padding: 0 1rem;
+  margin-bottom: 1.25rem;
   font-size: 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .form input:focus {
   outline: none;
-  border-color: #1e40af;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 /* Primary buttons */
 .form button {
   width: 100%;
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  border: none;
-  border-radius: 4px;
-  background: #2563eb;
-  color: #fff;
+  height: 3.2rem;
+  margin-bottom: 1rem;
   font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .form button:hover {
+  transform: translateY(-2px);
+}
+
+/* Sign In & Create Account buttons */
+.form button[type="submit"] {
+  background: #2563eb;
+  color: #fff;
+}
+.form button[type="submit"]:hover {
   background: #1e3a8a;
 }
 
-/* Google button override */
+/* Google button */
 .google-btn {
   background: #4285f4;
+  color: #fff;
 }
 .google-btn:hover {
   background: #3367d6;
