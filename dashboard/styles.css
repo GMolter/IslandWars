@@ -1,4 +1,4 @@
-/* ===== RESET & GLOBALS ===== */
+/* ========== RESET & GLOBALS ========== */
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   height:100%;
@@ -6,7 +6,7 @@ html, body {
   background:#f0f4f8;
 }
 
-/* ===== DASHBOARD LAYOUT ===== */
+/* ========== LAYOUT ========== */
 .dashboard-container { display:flex; height:100%; }
 
 /* --- SIDEBAR --- */
@@ -15,14 +15,10 @@ html, body {
   padding:1.5rem 1rem; display:flex; flex-direction:column;
 }
 .logo {
-  font-size:1.25rem; font-weight:700; margin-bottom:2rem;
-  text-align:center;
-}
-.buy-options {
-  margin-bottom:1rem;
+  font-size:1.25rem; font-weight:700; margin-bottom:2rem; text-align:center;
 }
 .amount-buttons {
-  display:flex; gap:0.5rem; margin-bottom:0.5rem;
+  display:flex; gap:0.5rem; margin-bottom:1rem;
 }
 .amount-btn {
   flex:1; padding:0.5rem 0; background:#e5e7eb;
@@ -31,31 +27,34 @@ html, body {
 }
 .amount-btn.active { background:#1e40af; color:#fff; }
 .amount-btn:hover { background:#cbd5e1; }
-.cost-display {
-  font-size:1rem; margin-bottom:1rem;
-}
-.cost-display.green { color:#10b981; }
-.cost-display.red   { color:#ef4444; }
 
-/* Tooltip on Buy button */
 .sidebar-btn {
   position:relative;
   padding:0.75rem 1rem;
   background:#2563eb; color:#fff; border:none;
   border-radius:6px; font-size:1rem; cursor:pointer;
-  transition:background 0.2s;
+  transition:background 0.2s; margin-bottom:0.5rem;
 }
 .sidebar-btn:hover { background:#1e40af; }
 .sidebar-btn[data-tooltip]:hover::after {
   content:attr(data-tooltip);
-  position:absolute; top:50%; left:100%; transform:translateY(-50%);
-  margin-left:0.5rem; background:rgba(0,0,0,0.8);
-  color:#fff; padding:0.5rem; border-radius:4px;
-  white-space:nowrap; z-index:10;
+  position:absolute; top:50%; left:100%;
+  transform:translateY(-50%);
+  margin-left:0.5rem;
+  background:rgba(0,0,0,0.8); color:#fff;
+  padding:0.5rem; border-radius:4px; white-space:nowrap;
+  z-index:10;
 }
+.item-price {
+  font-size:1rem; margin-bottom:2rem;
+}
+.item-price.green { color:#10b981; }
+.item-price.red   { color:#ef4444; }
 
 /* --- MAIN CONTENT --- */
-.main-content { flex:1; padding:1.5rem; overflow-y:auto; }
+.main-content {
+  flex:1; padding:1.5rem; overflow-y:auto;
+}
 
 /* --- TOPBAR --- */
 .topbar {
@@ -102,29 +101,24 @@ html, body {
   background:#b91c1c;
 }
 
-/* --- RESOURCES GRID --- */
+/* --- RESOURCES --- */
 .resources {
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
   gap:1rem;
 }
-
-/* --- RESOURCE CARDS --- */
 .resource-card {
-  background:#fff; border-radius:8px;
-  padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.05);
-  text-align:center;
+  background:#fff; border-radius:8px; padding:1rem;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05); text-align:center;
 }
 .resource-card h2 {
-  margin-bottom:0.5rem; font-size:1.1rem;
-  color:#374151;
+  margin-bottom:0.5rem; font-size:1.1rem; color:#374151;
 }
 .resource-card p {
-  font-size:1.5rem; font-weight:600;
-  color:#1e40af;
+  font-size:1.5rem; font-weight:600; color:#1e40af;
 }
 
-/* --- MANUAL GATHER BUTTON --- */
+/* --- GATHER & RATE --- */
 .resource-btn {
   margin-top:0.5rem; padding:0.5rem 0.75rem;
   font-size:0.9rem; border:none; border-radius:4px;
@@ -132,3 +126,6 @@ html, body {
   transition:background 0.2s;
 }
 .resource-btn:hover { background:#059669; }
+.rate {
+  margin-top:0.5rem; font-size:0.9rem; color:#374151;
+}
